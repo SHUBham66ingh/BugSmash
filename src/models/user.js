@@ -1,4 +1,4 @@
-const mongoose = requir('mongoose');
+const mongoose = require('mongoose');
 const {Schema} =   mongoose;
 
 const userSchema  = new Schema(
@@ -36,9 +36,9 @@ const userSchema  = new Schema(
        },
 
        problemSolved :{
-        type : [string]
+        type : [String]
        },
-       
+
         password :{
         type : String,
         required: true

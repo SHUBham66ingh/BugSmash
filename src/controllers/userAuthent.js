@@ -8,7 +8,7 @@ const register = async (req , res)=>{
 
     try{
         // validate the data
-        validate(req.body);
+        User.validate(req.body);
    const {firstName , emailId , password} = req.body();
 
    req.body.password = await bcrypt.hash(password , 10);
@@ -20,12 +20,7 @@ const register = async (req , res)=>{
 
     catch(err){
    res.status(400).send("error"+err );
-
     }
-
-
-
-
 }
 
 const login = async ( req ,res)=>{
@@ -34,13 +29,13 @@ const login = async ( req ,res)=>{
           const {emailId , password } = req.body;
 
           if(!emailId)
-            throw new Error("invalid credentials");
+            throw new Error("Invalid credentials");
         if(!password)
-            throw new Error("invalid credentilas");
+            throw new Error("Invalid credentilas");
 
         const user  = await  User.findOne({emailId});
 
-        const match = bcrypt.compare(password , user.password);
+        const match = bcrypt.compare(password ,  user.password);
 
          if(!match)
             throw new Error("Invalid credentials");
@@ -55,3 +50,15 @@ const login = async ( req ,res)=>{
      }
 
 }
+
+// const logout = asyn( req , res)=>{
+//      try{
+
+//      }
+//      catch{
+
+
+//      }
+// }
+
+module.exports = {register , login };
