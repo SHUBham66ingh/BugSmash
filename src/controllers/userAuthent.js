@@ -9,7 +9,7 @@ const register = async (req , res)=>{
     try{
         // validate the data
         User.validate(req.body);
-   const {firstName , emailId , password} = req.body();
+   const {firstName , emailId , password} = req.body;
 
    req.body.password = await bcrypt.hash(password , 10);
    const user = await  User.create(req.body);
@@ -51,14 +51,17 @@ const login = async ( req ,res)=>{
 
 }
 
-// const logout = asyn( req , res)=>{
-//      try{
+const logout = asyn( req , res)=>{
+     try{
+        // validate the token
+        // token add kar dunga reddis ke bloklist me
+        // cookies ko clear kar dena
 
-//      }
-//      catch{
+     }
+     catch(err){
 
 
-//      }
-// }
+     }
+}
 
-module.exports = {register , login };
+module.exports = {register , login , logout};

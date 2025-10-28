@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 async function main()
 {
-  mongoose.connect('mongodb+srv://rohitNegi:Shubham12@cluster0.qp6m4sl.mongodb.net/Leetcode')
+  mongoose.connect(process.env.DB_CONNECT_STRING)
 }
 
 main()
