@@ -1,8 +1,9 @@
+
 const jwt = require("jsonwebtoken");
 const redisClient = require("../config/redis");
 const User = require("../models/user");
 
-const userMiddleware = async (req , res , next)=>{
+const  adminMiddleware = async (req , res , next)=>{
     try{
           const {token} = req.cookies;
           if(!token)
@@ -16,12 +17,17 @@ const userMiddleware = async (req , res , next)=>{
             throw new Error("Invalid token");
          }
          const result = await User.findById(_id);
+
+          if(payload.role!='admin')
+          {
+              throw new Error("inavalid Token")
+          }
+
          if(!result)
          {
             throw new Error("user doesn't exists");
          }
 
-    // reddis ke bloced list me toh present nahi hain
          const IsBlocked = await redisClient.exists(`token:${token}`);
 
          if(IsBlocked)
@@ -39,4 +45,4 @@ const userMiddleware = async (req , res , next)=>{
     }
 }
 
-module.exports = userMiddleware;
+module.exports =   adminMiddleware;

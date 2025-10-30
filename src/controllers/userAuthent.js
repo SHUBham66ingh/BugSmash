@@ -1,3 +1,4 @@
+const redisClient = require("../config/redis");
 const User = require("../models/user");
 const validate = require('../utils/validator');
 const bcrypt = require("bcrypt");
@@ -12,6 +13,8 @@ const register = async (req , res)=>{
    const {firstName , emailId , password} = req.body;
 
    req.body.password = await bcrypt.hash(password , 10);
+   req.body.role = 'user';
+   
    const user = await  User.create(req.body);
     const token =  jwt.sign({_id:user._id , emailId:emailId} ,process.env.JWT_KEY, {expiresIn : 60*60});
    res.cookie('token' , token , {maxAge: 60*60*1000});
@@ -22,6 +25,8 @@ const register = async (req , res)=>{
    res.status(400).send("error"+err );
     }
 }
+
+
 
 const login = async ( req ,res)=>{
 
@@ -40,7 +45,7 @@ const login = async ( req ,res)=>{
          if(!match)
             throw new Error("Invalid credentials");
 
-   const token =  jwt.sign({_id:user._id , emailId:emailId} ,process.env.JWT_KEY, {expiresIn : 60*60});
+   const token =  jwt.sign({_id:user._id , emailId:emailId ,  role:user.role} ,process.env.JWT_KEY, {expiresIn : 60*60});
    res.cookie('token' , token , {maxAge: 60*60*1000});
    res.status(200).send("logged in sucessfully");
      }
@@ -51,17 +56,50 @@ const login = async ( req ,res)=>{
 
 }
 
-const logout = asyn( req , res)=>{
-     try{
-        // validate the token
-        // token add kar dunga reddis ke bloklist me
-        // cookies ko clear kar dena
 
-     }
-     catch(err){
+const adminRegister = async (req , res)=>{
+       try{
+        // validate the data
+        User.validate(req.body);
+   const {firstName , emailId , password} = req.body;
 
+   req.body.password = await bcrypt.hash(password , 10);
+   req.body.role = 'admin';
+   
+   const user = await  User.create(req.body);
+    const token =  jwt.sign({_id:user._id , emailId:emailId , role:'admin'} ,process.env.JWT_KEY, {expiresIn : 60*60});
+   res.cookie('token' , token , {maxAge: 60*60*1000});
+   res.status(201).send("user registered successfully");
+    }
 
-     }
+    catch(err){
+   res.status(400).send("error"+err );
+    }
 }
 
-module.exports = {register , login , logout};
+
+const logout = async (req, res) => {
+  try {
+    const { token } = req.cookies;
+
+    if (!token) {
+      return res.status(400).send("No token found in cookies");
+    }
+
+    const payload = jwt.decode(token);
+
+    // Add token to blocklist in Redis
+    await redisClient.set(`token:${token}`, 'Blocked');
+    await redisClient.expireAt(`token:${token}`, payload.exp);
+
+    // Clear the cookie
+    res.cookie("token", null, { expires: new Date(Date.now()), httpOnly: true });
+
+    res.send("Logged out successfully");
+  } catch (err) {
+    res.send("error: " + err.message);
+  }
+};
+
+
+module.exports = {register , login , logout , adminRegister};
