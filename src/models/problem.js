@@ -1,4 +1,4 @@
-const mongoose = require('mongoose') ;
+const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
 const problemSchema = new Schema({
@@ -99,4 +99,4 @@ const problemSchema = new Schema({
 
 const Problem = mongoose.model('problem' , problemSchema);
 
-moodule.exports = Problem;
+module.exports = Problem;
