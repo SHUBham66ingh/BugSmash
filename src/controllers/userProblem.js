@@ -24,10 +24,12 @@ const createProblem = async (req , res)=>{
        } ))
 
        const submitResult = await submitBatch(submissions);
+        console.log(submitResult);
 
        const resultToken = submitResult.map((value)=>value.token);
 
        const testResult = await submitToken(resultToken);
+       console.log(testResult);
 
 
        for(const test of testResult)
