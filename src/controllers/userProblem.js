@@ -1,6 +1,7 @@
 const { getLanguageById, submitBatch } = require("../utils/ProblemUtility");
 const Problem = require("../models/problem");
 
+
 const createProblem = async (req, res) => {
   const {
     title,
@@ -52,6 +53,7 @@ const createProblem = async (req, res) => {
     res.status(400).send("error");
   }
 };
+
 
 const updateProblem = async (req, res) => {
   const { id } = req.params;
@@ -121,7 +123,81 @@ const updateProblem = async (req, res) => {
   }
 };
 
+const deleteProblem = async ( req , res)=>{
+
+     const {id} = req.params;
+     try{
+
+      if(!id)
+      {
+         return res.status(400).send("Id is Missing");
+      }
+
+
+      const deleteProblem = await  Problem.findByIdAndDelete(id);
+
+      if(!deleteProblem)
+      {
+        return  res.status(404).send("Problem is Missing");
+      }
+
+      res.status(200).send("succesfull deleted");
+
+     }
+     catch(err){
+      res.status(500).send("Error"+err);
+     }
+
+};
+
+const getLanguageById = async( req , res)=>{
+
+    const {id} = req.params;
+     try{
+
+      if(!id)
+      {
+         return res.status(400).send("Id is Missing");
+      }
+
+
+      const getProblem = await  Problem.findByIdAndDelete(id);
+
+      if(!getProblem)
+      {
+        return  res.status(404).send("Problem is Missing");
+      }
+
+      res.status(200).send(getProblem);
+
+     }
+     catch(err){
+      res.status(500).send("Error"+err);
+     }
+     
+}
+
+
+const getAllProblem = async(req , res)=>{  
+    
+     try{
+      const getProblem = await  Problem.find({});
+
+      if(getProblem.length == 0)
+      {
+        return  res.status(404).send("Problem is Missing");
+      }
+
+      res.status(200).send(getProblem);
+
+     }
+     catch(err){
+      res.status(500).send("Error"+err);
+     }
+}
 
 
 
-module.exports = createProblem;
+
+
+module.exports = {createProblem , updateProblem , deleteProblem};
