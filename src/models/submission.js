@@ -58,4 +58,4 @@ const submissionSchema = new Schema(
 
 const Submission = mongoose.model('submission' , submissionSchema);
 
-
+module.exports = Submission;
